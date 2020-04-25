@@ -1,0 +1,7 @@
+{
+  "name": "RegattaScheduler",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
