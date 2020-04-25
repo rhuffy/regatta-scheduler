@@ -1,5 +1,5 @@
 {
-  "name": "RegattaScheduler",
+  "name": "regatta-scheduler",
   "integrations": {
     "capacitor": {}
   },
