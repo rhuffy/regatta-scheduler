@@ -26,6 +26,12 @@ import {
   trashSharp,
   warningOutline,
   warningSharp,
+  boatOutline,
+  boatSharp,
+  calendarOutline,
+  calendarSharp,
+  flagOutline,
+  flagSharp,
 } from "ionicons/icons";
 import "./Menu.css";
 
@@ -38,22 +44,22 @@ interface AppPage {
 
 const appPages: AppPage[] = [
   {
-    title: "Inbox",
-    url: "/page/Inbox",
-    iosIcon: mailOutline,
-    mdIcon: mailSharp,
+    title: "Regattas",
+    url: "/page/Regattas",
+    iosIcon: boatOutline,
+    mdIcon: boatSharp,
   },
   {
-    title: "Outbox",
-    url: "/page/Outbox",
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp,
+    title: "My Schedule",
+    url: "/page/Schedule",
+    iosIcon: calendarOutline,
+    mdIcon: calendarSharp,
   },
   {
-    title: "Favorites",
-    url: "/page/Favorites",
-    iosIcon: heartOutline,
-    mdIcon: heartSharp,
+    title: "Hosting",
+    url: "/page/Hosting",
+    iosIcon: flagOutline,
+    mdIcon: flagSharp,
   },
   {
     title: "Archived",
