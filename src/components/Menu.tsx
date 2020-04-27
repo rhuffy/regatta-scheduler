@@ -12,21 +12,7 @@ import {
 
 import React from "react";
 import { useLocation } from "react-router-dom";
-import {
-  archiveOutline,
-  archiveSharp,
-  bookmarkOutline,
-  trashOutline,
-  trashSharp,
-  warningOutline,
-  warningSharp,
-  boatOutline,
-  boatSharp,
-  calendarOutline,
-  calendarSharp,
-  flagOutline,
-  flagSharp,
-} from "ionicons/icons";
+import { boatOutline, boatSharp, calendarOutline, calendarSharp, flagOutline, flagSharp } from "ionicons/icons";
 import "./Menu.css";
 
 interface AppPage {

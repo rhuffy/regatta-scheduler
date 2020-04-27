@@ -19,7 +19,6 @@ import React, { useState } from "react";
 import { useParams } from "react-router";
 import ContentContainer from "../components/ContentContainer";
 import "./Page.css";
-import { PageName } from "../App";
 interface Props {
   loggedIn: boolean;
 }

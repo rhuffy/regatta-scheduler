@@ -7,7 +7,6 @@ import "firebase/auth";
 import { IonList, IonItem, IonLabel, IonContent, IonButton } from "@ionic/react";
 import "./ContentContainer.css";
 import { Regatta, User, makeUser, makeRegatta } from "../interfaces";
-import { PageName } from "../App";
 
 type ButtonState = "confirmed" | "alternate" | "disabled" | "register" | "join_alternates";
 
