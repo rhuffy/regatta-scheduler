@@ -1,22 +1,24 @@
 import React from "react";
 import * as firebase from "firebase/app";
+import * as datefns from "date-fns";
 import "firebase/firestore";
+import "firebase/auth";
 
 import {
   IonList,
   IonItem,
   IonLabel,
-  IonInput,
-  IonToggle,
-  IonRadio,
-  IonCheckbox,
-  IonItemSliding,
-  IonItemOption,
-  IonItemOptions,
   IonContent,
+  IonCard,
+  IonCardHeader,
+  IonCardContent,
+  IonListHeader,
+  IonButton,
 } from "@ionic/react";
 import "./ContentContainer.css";
-import { Regatta } from "../interfaces";
+import { Regatta, User, makeUser, makeRegatta } from "../interfaces";
+
+type ButtonState = "confirmed" | "alternate" | "disabled" | "register" | "join_alternates";
 
 interface Props {
   name: string;
@@ -24,110 +26,127 @@ interface Props {
 
 interface State {
   regattas: Array<Regatta>;
+  buttonStateForRegatta: Map<string, ButtonState>;
+  currentUser: User | null;
 }
 
 class ContentContainer extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      currentUser: null,
+      regattas: [],
+      buttonStateForRegatta: new Map(),
+    };
+  }
   async componentDidMount() {
+    const authUser = firebase.auth().currentUser;
+    if (authUser !== null) {
+      const currentUser = makeUser(await firebase.firestore().collection("users").doc(authUser.uid).get());
+      this.setState({ currentUser: currentUser });
+    }
     firebase
       .firestore()
       .collection("regattas")
       .orderBy("date")
       .onSnapshot((querySnapshot) => {
+        const newButtonStateMap = new Map(this.state.buttonStateForRegatta);
         const regattas: Array<Regatta> = querySnapshot.docs.map((val) => {
-          const data = val.data();
-          return {
-            name: data.name,
-            capacity: data.capacity,
-            host: data.host,
-            date: data.date,
-            attendees: data.attendees,
-            alternates: data.alternates,
-          };
+          const regatta = makeRegatta(val.data());
+          newButtonStateMap.set(regatta.id, this.getButtonState(regatta));
+          return regatta;
         });
-
-        this.setState({ regattas: regattas });
+        this.setState({ regattas: regattas, buttonStateForRegatta: newButtonStateMap });
       });
   }
+  /**
+   * Determines the state of the registration button.
+   *
+   * non-clickable:
+   * Confirmed if current user's team in regatta.attendees
+   * Alternate if current user's team in regatta.alternates
+   * disabled Register if not logged in
+   *
+   * clickable:
+   * Register if regatta.attendees.length < regatta.capacity
+   * Join Alternates if regatta.attendees.length >= regatta.capacity
+   */
+
+  getButtonState(regatta: Regatta): ButtonState {
+    // checks if logged int
+    const user = this.state.currentUser;
+    if (user !== null) {
+      if (regatta.attendees.map((a) => a.id).includes(user.teamIds[0])) {
+        return "confirmed";
+      }
+      if (regatta.alternates.map((a) => a.id).includes(user.teamIds[0])) {
+        return "alternate";
+      }
+
+      if (regatta.attendees.length < regatta.capacity) {
+        return "register";
+      } else {
+        return "join_alternates";
+      }
+    }
+    // disabled register button for not logged in users
+    return "disabled";
+  }
+
+  getButton(regattaId: string): JSX.Element {
+    const buttonState = this.state.buttonStateForRegatta.get(regattaId);
+    switch (buttonState) {
+      case "register":
+        return (
+          <IonButton disabled={false} color="primary" slot="end">
+            Register
+          </IonButton>
+        );
+      case "confirmed":
+        return (
+          <IonButton disabled={true} color="success" slot="end">
+            Confirmed
+          </IonButton>
+        );
+      case "disabled":
+        return (
+          <IonButton disabled={true} color="medium" slot="end">
+            Not Logged In
+          </IonButton>
+        );
+      case "alternate":
+        return (
+          <IonButton disabled={true} color="warning" slot="end">
+            Alternate
+          </IonButton>
+        );
+      case "join_alternates":
+        return (
+          <IonButton disabled={false} color="tertiary" slot="end">
+            Join Alternates
+          </IonButton>
+        );
+    }
+    return <div></div>;
+  }
+
   render() {
     return (
-      // <div className="container">
-      //   <strong>{this.props.name}</strong>
-      //   <p>
-      //     Explore{" "}
-      //     <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">
-      //       UI Components
-      //     </a>
-      //   </p>
-      // </div>
       <IonContent>
         <IonList>
           {this.state.regattas.map((regatta) => {
             return (
-              <IonItem>
-                <IonLabel>{regatta.name}</IonLabel>
+              <IonItem key={regatta.id} onClick={() => console.log(`click on ${regatta.name}`)}>
+                <IonLabel slot="start">{regatta.name}</IonLabel>
+                <IonLabel>
+                  <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
+                  <h3>{regatta.host.name}</h3>
+                </IonLabel>
+                <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
+                {this.getButton(regatta.id)}
               </IonItem>
             );
           })}
-        </IonList>
-
-        {/*-- List of Text Items --*/}
-        <IonList>
-          <IonItem>
-            <IonLabel>Pokémon Yellow</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Mega Man X</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>The Legend of Zelda</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Pac-Man</IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Super Mario World</IonLabel>
-          </IonItem>
-        </IonList>
-
-        {/*-- List of Input Items --*/}
-        <IonList>
-          <IonItem>
-            <IonLabel>Input</IonLabel>
-            <IonInput></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Toggle</IonLabel>
-            <IonToggle slot="end"></IonToggle>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Radio</IonLabel>
-            <IonRadio slot="end"></IonRadio>
-          </IonItem>
-          <IonItem>
-            <IonLabel>Checkbox</IonLabel>
-            <IonCheckbox slot="start" />
-          </IonItem>
-        </IonList>
-
-        {/*-- List of Sliding Items --*/}
-        <IonList>
-          <IonItemSliding>
-            <IonItem>
-              <IonLabel>Item</IonLabel>
-            </IonItem>
-            <IonItemOptions side="end">
-              <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-            </IonItemOptions>
-          </IonItemSliding>
-
-          <IonItemSliding>
-            <IonItem>
-              <IonLabel>Item</IonLabel>
-            </IonItem>
-            <IonItemOptions side="end">
-              <IonItemOption onClick={() => {}}>Unread</IonItemOption>
-            </IonItemOptions>
-          </IonItemSliding>
         </IonList>
       </IonContent>
     );
