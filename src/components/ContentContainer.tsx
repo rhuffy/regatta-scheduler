@@ -4,19 +4,10 @@ import * as datefns from "date-fns";
 import "firebase/firestore";
 import "firebase/auth";
 
-import {
-  IonList,
-  IonItem,
-  IonLabel,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardContent,
-  IonListHeader,
-  IonButton,
-} from "@ionic/react";
+import { IonList, IonItem, IonLabel, IonContent, IonButton } from "@ionic/react";
 import "./ContentContainer.css";
 import { Regatta, User, makeUser, makeRegatta } from "../interfaces";
+import { PageName } from "../App";
 
 type ButtonState = "confirmed" | "alternate" | "disabled" | "register" | "join_alternates";
 
@@ -138,25 +129,39 @@ class ContentContainer extends React.Component<Props, State> {
   }
 
   render() {
-    return (
-      <IonContent>
-        <IonList>
-          {this.state.regattas.map((regatta) => {
-            return (
-              <IonItem key={regatta.id} onClick={() => console.log(this.state.buttonStateForRegatta)}>
-                <IonLabel slot="start">{regatta.name}</IonLabel>
-                <IonLabel>
-                  <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
-                  <h3>{regatta.host.name}</h3>
-                </IonLabel>
-                <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
-                {this.getButton(regatta.id)}
-              </IonItem>
-            );
-          })}
-        </IonList>
-      </IonContent>
-    );
+    let content = <IonContent></IonContent>;
+
+    switch (this.props.name) {
+      case "Regattas":
+        content = (
+          <IonContent>
+            <IonList>
+              {this.state.regattas.map((regatta) => {
+                return (
+                  <IonItem key={regatta.id} onClick={() => console.log(this.state.buttonStateForRegatta)}>
+                    <IonLabel slot="start">{regatta.name}</IonLabel>
+                    <IonLabel>
+                      <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
+                      <h3>{regatta.host.name}</h3>
+                    </IonLabel>
+                    <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
+                    {this.getButton(regatta.id)}
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </IonContent>
+        );
+        break;
+      case "Schedule":
+        break;
+      case "Hosting":
+        break;
+      default:
+        break;
+    }
+
+    return content;
   }
 }
 

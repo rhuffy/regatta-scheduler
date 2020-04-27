@@ -27,6 +27,8 @@ import "./theme/variables.css";
 import * as firebase from "firebase/app";
 import "firebase/auth";
 
+export type PageName = "Regattas" | "Schedule" | "Hosting";
+
 interface Props {}
 interface State {
   loggedIn: boolean;
