@@ -33,8 +33,6 @@ class ContentContainer extends React.Component<Props, State> {
     firebase.auth().onAuthStateChanged(async (authUser) => {
       if (authUser !== null) {
         const currentUser = makeUser(await firebase.firestore().collection("users").doc(authUser.uid).get());
-        console.log("logged in");
-        console.log(currentUser);
         this.setState({ currentUser: currentUser });
       } else {
         this.setState({ currentUser: null });
@@ -73,12 +71,12 @@ class ContentContainer extends React.Component<Props, State> {
   getButtonState(regatta: Regatta): ButtonState {
     // checks if logged int
     const user = this.state.currentUser;
-    console.log(user);
     if (user !== null) {
-      if (regatta.attendees.map((a) => a.id).includes(user.teamIds[0])) {
+      if (regatta.attendees.map((x) => x.name).includes(user.teamIds[0])) {
         return "confirmed";
       }
-      if (regatta.alternates.map((a) => a.id).includes(user.teamIds[0])) {
+      // @ts-ignore
+      if (regatta.alternates.map((x) => x.name).includes(user.teamIds[0])) {
         return "alternate";
       }
 
@@ -139,7 +137,7 @@ class ContentContainer extends React.Component<Props, State> {
             <IonList>
               {this.state.regattas.map((regatta) => {
                 return (
-                  <IonItem key={regatta.id} onClick={() => console.log(this.state.buttonStateForRegatta)}>
+                  <IonItem key={regatta.id}>
                     <IonLabel slot="start">{regatta.name}</IonLabel>
                     <IonLabel>
                       <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
