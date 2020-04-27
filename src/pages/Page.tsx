@@ -36,6 +36,10 @@ async function handleLogin(email: string | undefined, password: string | undefin
   return false;
 }
 
+async function handleLogout() {
+  await firebase.auth().signOut();
+}
+
 const Page: React.FC<Props> = (props) => {
   const { name } = useParams<{ name: string }>();
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -86,8 +90,8 @@ const Page: React.FC<Props> = (props) => {
             </IonButton>
           </IonModal>
           {props.loggedIn ? (
-            <IonButton disabled={true} slot="end">
-              Logged In
+            <IonButton onClick={() => handleLogout()} slot="end">
+              Log Out
             </IonButton>
           ) : (
             <IonButton onClick={() => setShowLoginModal(true)} slot="end">

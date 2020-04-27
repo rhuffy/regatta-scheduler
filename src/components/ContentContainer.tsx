@@ -36,10 +36,12 @@ class ContentContainer extends React.Component<Props, State> {
         console.log("logged in");
         console.log(currentUser);
         this.setState({ currentUser: currentUser });
-        const newButtonStateMap = new Map(this.state.buttonStateForRegatta);
-        this.state.regattas.map((regatta) => newButtonStateMap.set(regatta.id, this.getButtonState(regatta)));
-        this.setState({ buttonStateForRegatta: newButtonStateMap });
+      } else {
+        this.setState({ currentUser: null });
       }
+      const newButtonStateMap = new Map();
+      this.state.regattas.map((regatta) => newButtonStateMap.set(regatta.id, this.getButtonState(regatta)));
+      this.setState({ buttonStateForRegatta: newButtonStateMap });
     });
     firebase
       .firestore()
