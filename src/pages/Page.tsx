@@ -1,3 +1,6 @@
+import firebase from "firebase";
+import "firebase/auth";
+
 import {
   IonButtons,
   IonButton,
@@ -21,10 +24,24 @@ interface Props {
   loggedIn: boolean;
 }
 
+async function handleLogin(email: string | undefined, password: string | undefined): Promise<boolean> {
+  if (email === undefined || password === undefined) {
+    return false;
+  }
+
+  const creds = await firebase.auth().signInWithEmailAndPassword(email, password);
+
+  if (creds.user !== null) {
+    return true;
+  }
+  return false;
+}
+
 const Page: React.FC<Props> = (props) => {
   const { name } = useParams<{ name: string }>();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [text, setText] = useState<string>();
+  const [emailText, setEmailText] = useState<string>();
+  const [passwordText, setPasswordText] = useState<string>();
 
   return (
     <IonPage>
@@ -45,20 +62,29 @@ const Page: React.FC<Props> = (props) => {
                 <IonItem>
                   <IonTextarea
                     placeholder="Email"
-                    value={text}
-                    onIonChange={(e) => setText(e.detail.value!)}
+                    value={emailText}
+                    onIonChange={(e) => setEmailText(e.detail.value!)}
                   ></IonTextarea>
                 </IonItem>
                 <IonItem>
                   <IonTextarea
                     placeholder="Password"
-                    value={text}
-                    onIonChange={(e) => setText(e.detail.value!)}
+                    value={passwordText}
+                    onIonChange={(e) => setPasswordText(e.detail.value!)}
                   ></IonTextarea>
                 </IonItem>
               </IonList>
             </IonContent>
-            <IonButton onClick={() => setShowLoginModal(false)}>Log In</IonButton>
+            <IonButton
+              onClick={async () => {
+                const loginResult = await handleLogin(emailText, passwordText);
+                if (loginResult === true) {
+                  setShowLoginModal(false);
+                }
+              }}
+            >
+              Log In
+            </IonButton>
           </IonModal>
           {props.loggedIn ? (
             <IonButton disabled={true} slot="end">
