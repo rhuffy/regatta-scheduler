@@ -24,20 +24,46 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-const App: React.FC = () => {
-  return (
-    <IonApp>
-      <IonReactRouter>
-        <IonSplitPane contentId="main">
-          <Menu />
-          <IonRouterOutlet id="main">
-            <Route path="/page/:name" component={Page} exact />
-            <Redirect from="/" to="/page/Inbox" exact />
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
-    </IonApp>
-  );
-};
+import * as firebase from "firebase/app";
+import "firebase/auth";
+
+interface Props {}
+interface State {
+  loggedIn: boolean;
+}
+class App extends React.Component<Props, State> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      loggedIn: false,
+    };
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((authUser) => {
+      if (authUser !== null) {
+        this.setState({ loggedIn: true });
+      } else {
+        this.setState({ loggedIn: false });
+      }
+    });
+  }
+
+  render() {
+    return (
+      <IonApp>
+        <IonReactRouter>
+          <IonSplitPane contentId="main">
+            <Menu />
+            <IonRouterOutlet id="main">
+              <Route path="/page/:name" render={(props) => <Page loggedIn={this.state.loggedIn} />} exact />
+              <Redirect from="/" to="/page/Inbox" exact />
+            </IonRouterOutlet>
+          </IonSplitPane>
+        </IonReactRouter>
+      </IonApp>
+    );
+  }
+}
 
 export default App;

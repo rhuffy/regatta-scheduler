@@ -39,12 +39,18 @@ class ContentContainer extends React.Component<Props, State> {
       buttonStateForRegatta: new Map(),
     };
   }
-  async componentDidMount() {
-    const authUser = firebase.auth().currentUser;
-    if (authUser !== null) {
-      const currentUser = makeUser(await firebase.firestore().collection("users").doc(authUser.uid).get());
-      this.setState({ currentUser: currentUser });
-    }
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged(async (authUser) => {
+      if (authUser !== null) {
+        const currentUser = makeUser(await firebase.firestore().collection("users").doc(authUser.uid).get());
+        console.log("logged in");
+        console.log(currentUser);
+        this.setState({ currentUser: currentUser });
+        const newButtonStateMap = new Map(this.state.buttonStateForRegatta);
+        this.state.regattas.map((regatta) => newButtonStateMap.set(regatta.id, this.getButtonState(regatta)));
+        this.setState({ buttonStateForRegatta: newButtonStateMap });
+      }
+    });
     firebase
       .firestore()
       .collection("regattas")
@@ -52,7 +58,7 @@ class ContentContainer extends React.Component<Props, State> {
       .onSnapshot((querySnapshot) => {
         const newButtonStateMap = new Map(this.state.buttonStateForRegatta);
         const regattas: Array<Regatta> = querySnapshot.docs.map((val) => {
-          const regatta = makeRegatta(val.data());
+          const regatta = makeRegatta(val.id, val.data());
           newButtonStateMap.set(regatta.id, this.getButtonState(regatta));
           return regatta;
         });
@@ -75,6 +81,7 @@ class ContentContainer extends React.Component<Props, State> {
   getButtonState(regatta: Regatta): ButtonState {
     // checks if logged int
     const user = this.state.currentUser;
+    console.log(user);
     if (user !== null) {
       if (regatta.attendees.map((a) => a.id).includes(user.teamIds[0])) {
         return "confirmed";
@@ -136,7 +143,7 @@ class ContentContainer extends React.Component<Props, State> {
         <IonList>
           {this.state.regattas.map((regatta) => {
             return (
-              <IonItem key={regatta.id} onClick={() => console.log(`click on ${regatta.name}`)}>
+              <IonItem key={regatta.id} onClick={() => console.log(this.state.buttonStateForRegatta)}>
                 <IonLabel slot="start">{regatta.name}</IonLabel>
                 <IonLabel>
                   <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
