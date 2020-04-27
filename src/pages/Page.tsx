@@ -28,7 +28,7 @@ async function handleLogin(email: string | undefined, password: string | undefin
   if (email === undefined || password === undefined) {
     return false;
   }
-
+  await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   const creds = await firebase.auth().signInWithEmailAndPassword(email, password);
 
   if (creds.user !== null) {
