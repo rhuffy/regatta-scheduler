@@ -12,7 +12,6 @@ import {
   IonToolbar,
   IonModal,
   IonList,
-  IonTextarea,
   IonItem,
   IonInput,
 } from "@ionic/react";
