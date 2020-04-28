@@ -4,7 +4,7 @@ import * as datefns from "date-fns";
 import "firebase/firestore";
 import "firebase/auth";
 
-import { IonList, IonItem, IonLabel, IonContent, IonButton } from "@ionic/react";
+import { IonList, IonItem, IonLabel, IonContent, IonButton, IonHeader } from "@ionic/react";
 import "./ContentContainer.css";
 import { Regatta, User, makeUser, makeRegatta } from "../interfaces";
 
@@ -175,9 +175,20 @@ class ContentContainer extends React.Component<Props, State> {
               </IonList>
             </IonContent>
           );
+        } else {
+          content = (
+            <IonContent>
+              <IonHeader>Please log in to view your schedule</IonHeader>
+            </IonContent>
+          );
         }
         break;
       case "Hosting":
+        content = (
+          <IonContent>
+            <IonHeader>This pages contains information on events you are hosting</IonHeader>
+          </IonContent>
+        );
         break;
       default:
         break;
