@@ -14,6 +14,7 @@ import {
   IonList,
   IonTextarea,
   IonItem,
+  IonInput,
 } from "@ionic/react";
 import React, { useState } from "react";
 import { useParams } from "react-router";
@@ -63,18 +64,28 @@ const Page: React.FC<Props> = (props) => {
             <IonContent>
               <IonList>
                 <IonItem>
-                  <IonTextarea
+                  <IonInput
                     placeholder="Email"
+                    type="email"
                     value={emailText}
                     onIonChange={(e) => setEmailText(e.detail.value!)}
-                  ></IonTextarea>
+                  ></IonInput>
                 </IonItem>
                 <IonItem>
-                  <IonTextarea
+                  <IonInput
                     placeholder="Password"
+                    type="password"
                     value={passwordText}
                     onIonChange={(e) => setPasswordText(e.detail.value!)}
-                  ></IonTextarea>
+                    onKeyUp={async (e) => {
+                      if (e.key === "Enter") {
+                        const loginResult = await handleLogin(emailText, passwordText);
+                        if (loginResult === true) {
+                          setShowLoginModal(false);
+                        }
+                      }
+                    }}
+                  ></IonInput>
                 </IonItem>
               </IonList>
             </IonContent>
