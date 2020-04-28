@@ -28,13 +28,17 @@ export interface Host {
   primaryContact: string;
 }
 
-export function makeHost(x: any): Host {
-  return {
-    id: x.id,
-    name: x.name,
-    location: x.location,
-    primaryContact: x.primaryContact,
-  };
+export function makeHost(doc: firestoreResponse): Host {
+  const data = doc.data();
+  if (data) {
+    return {
+      id: doc.id,
+      name: data.name,
+      location: data.location,
+      primaryContact: data.primaryContact,
+    };
+  }
+  throw new Error("Invalid");
 }
 
 export interface Team {
@@ -43,12 +47,16 @@ export interface Team {
   schoolName: string;
 }
 
-export function makeTeam(x: any): Team {
-  return {
-    id: x.id,
-    name: x.name,
-    schoolName: x.schoolName,
-  };
+export function makeTeam(doc: firestoreResponse): Team {
+  const data = doc.data();
+  if (data) {
+    return {
+      id: doc.id,
+      name: data.name,
+      schoolName: data.schoolName,
+    };
+  }
+  throw new Error("Invalid");
 }
 
 export interface AlternateRequest {
@@ -57,12 +65,16 @@ export interface AlternateRequest {
   timestamp: firebase.firestore.Timestamp;
 }
 
-export function makeAlternateRequest(x: any): AlternateRequest {
-  return {
-    id: x.id,
-    team: x.team,
-    timestamp: x.timestamp,
-  };
+export function makeAlternateRequest(doc: firestoreResponse): AlternateRequest {
+  const data = doc.data();
+  if (data) {
+    return {
+      id: doc.id,
+      team: data.team,
+      timestamp: data.timestamp,
+    };
+  }
+  throw new Error("Invalid");
 }
 
 export interface Regatta {
@@ -79,15 +91,19 @@ export interface Regatta {
   alternates: Array<Team>;
 }
 
-export function makeRegatta(id: string, x: any): Regatta {
-  return {
-    id: id,
-    name: x.name,
-    capacity: x.capacity,
-    boat: x.boat,
-    host: x.host,
-    date: x.date,
-    attendees: x.attendees,
-    alternates: x.alternates,
-  };
+export function makeRegatta(doc: firestoreResponse): Regatta {
+  const data = doc.data();
+  if (data) {
+    return {
+      id: doc.id,
+      name: data.name,
+      capacity: data.capacity,
+      boat: data.boat,
+      host: data.host,
+      date: data.date,
+      attendees: data.attendees,
+      alternates: data.alternates,
+    };
+  }
+  throw new Error("Invalid");
 }

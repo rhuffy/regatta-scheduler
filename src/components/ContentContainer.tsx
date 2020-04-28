@@ -48,7 +48,7 @@ class ContentContainer extends React.Component<Props, State> {
       .onSnapshot((querySnapshot) => {
         const newButtonStateMap = new Map(this.state.buttonStateForRegatta);
         const regattas: Array<Regatta> = querySnapshot.docs.map((val) => {
-          const regatta = makeRegatta(val.id, val.data());
+          const regatta = makeRegatta(val);
           newButtonStateMap.set(regatta.id, this.getButtonState(regatta));
           return regatta;
         });
@@ -129,6 +129,7 @@ class ContentContainer extends React.Component<Props, State> {
 
   render() {
     let content = <IonContent></IonContent>;
+    const currentUser = this.state.currentUser;
 
     switch (this.props.name) {
       case "Regattas":
@@ -153,6 +154,28 @@ class ContentContainer extends React.Component<Props, State> {
         );
         break;
       case "Schedule":
+        if (currentUser) {
+          content = (
+            <IonContent>
+              <IonList>
+                {this.state.regattas
+                  .filter((regatta) => regatta.attendees.map((team) => team.name).includes(currentUser.teamIds[0]))
+                  .map((regatta) => {
+                    return (
+                      <IonItem key={regatta.id}>
+                        <IonLabel slot="start">{regatta.name}</IonLabel>
+                        <IonLabel>
+                          <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
+                          <h3>{regatta.host.name}</h3>
+                        </IonLabel>
+                        <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
+                      </IonItem>
+                    );
+                  })}
+              </IonList>
+            </IonContent>
+          );
+        }
         break;
       case "Hosting":
         break;
