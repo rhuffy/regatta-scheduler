@@ -107,3 +107,5 @@ export function makeRegatta(doc: firestoreResponse): Regatta {
   }
   throw new Error("Invalid");
 }
+
+export type ButtonState = "confirmed" | "alternate" | "disabled" | "register" | "join_alternates";

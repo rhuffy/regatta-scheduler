@@ -1,14 +1,12 @@
 import React from "react";
 import * as firebase from "firebase/app";
-import * as datefns from "date-fns";
 import "firebase/firestore";
 import "firebase/auth";
 
-import { IonList, IonItem, IonLabel, IonContent, IonButton, IonHeader } from "@ionic/react";
+import { IonList, IonContent, IonHeader } from "@ionic/react";
 import "./ContentContainer.css";
-import { Regatta, User, makeUser, makeRegatta } from "../interfaces";
-
-type ButtonState = "confirmed" | "alternate" | "disabled" | "register" | "join_alternates";
+import { Regatta, User, makeUser, makeRegatta, ButtonState } from "../interfaces";
+import { RegattaListItem } from "./RegattaListItem";
 
 interface Props {
   name: string;
@@ -75,11 +73,9 @@ class ContentContainer extends React.Component<Props, State> {
       if (regatta.attendees.map((x) => x.name).includes(user.teamIds[0])) {
         return "confirmed";
       }
-      // @ts-ignore
       if (regatta.alternates.map((x) => x.name).includes(user.teamIds[0])) {
         return "alternate";
       }
-
       if (regatta.attendees.length < regatta.capacity) {
         return "register";
       } else {
@@ -88,43 +84,6 @@ class ContentContainer extends React.Component<Props, State> {
     }
     // disabled register button for not logged in users
     return "disabled";
-  }
-
-  getButton(regattaId: string): JSX.Element {
-    const buttonState = this.state.buttonStateForRegatta.get(regattaId);
-    switch (buttonState) {
-      case "register":
-        return (
-          <IonButton disabled={false} color="primary" slot="end">
-            Register
-          </IonButton>
-        );
-      case "confirmed":
-        return (
-          <IonButton disabled={true} color="success" slot="end">
-            Confirmed
-          </IonButton>
-        );
-      case "disabled":
-        return (
-          <IonButton disabled={true} color="medium" slot="end">
-            Not Logged In
-          </IonButton>
-        );
-      case "alternate":
-        return (
-          <IonButton disabled={true} color="warning" slot="end">
-            Alternate
-          </IonButton>
-        );
-      case "join_alternates":
-        return (
-          <IonButton disabled={false} color="tertiary" slot="end">
-            Join Alternates
-          </IonButton>
-        );
-    }
-    return <div></div>;
   }
 
   render() {
@@ -136,17 +95,14 @@ class ContentContainer extends React.Component<Props, State> {
         content = (
           <IonContent>
             <IonList>
-              {this.state.regattas.map((regatta) => {
+              {this.state.regattas.map((regatta, i) => {
                 return (
-                  <IonItem key={regatta.id}>
-                    <IonLabel slot="start">{regatta.name}</IonLabel>
-                    <IonLabel>
-                      <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
-                      <h3>{regatta.host.name}</h3>
-                    </IonLabel>
-                    <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
-                    {this.getButton(regatta.id)}
-                  </IonItem>
+                  <RegattaListItem
+                    key={i}
+                    regatta={regatta}
+                    user={currentUser}
+                    buttonState={this.state.buttonStateForRegatta.get(regatta.id)}
+                  />
                 );
               })}
             </IonList>
@@ -160,16 +116,14 @@ class ContentContainer extends React.Component<Props, State> {
               <IonList>
                 {this.state.regattas
                   .filter((regatta) => regatta.attendees.map((team) => team.name).includes(currentUser.teamIds[0]))
-                  .map((regatta) => {
+                  .map((regatta, i) => {
                     return (
-                      <IonItem key={regatta.id}>
-                        <IonLabel slot="start">{regatta.name}</IonLabel>
-                        <IonLabel>
-                          <h2>{datefns.format(datefns.parseISO(regatta.date.start), "PP")}</h2>
-                          <h3>{regatta.host.name}</h3>
-                        </IonLabel>
-                        <IonLabel>{`${regatta.attendees.length}/${regatta.capacity}`}</IonLabel>
-                      </IonItem>
+                      <RegattaListItem
+                        key={i}
+                        regatta={regatta}
+                        user={currentUser}
+                        buttonState={this.state.buttonStateForRegatta.get(regatta.id)}
+                      />
                     );
                   })}
               </IonList>
@@ -184,11 +138,32 @@ class ContentContainer extends React.Component<Props, State> {
         }
         break;
       case "Hosting":
-        content = (
-          <IonContent>
-            <IonHeader>This pages contains information on events you are hosting</IonHeader>
-          </IonContent>
-        );
+        if (currentUser) {
+          content = (
+            <IonContent>
+              <IonList>
+                {this.state.regattas
+                  .filter((regatta) => regatta.host.name === currentUser.teamIds[0])
+                  .map((regatta, i) => {
+                    return (
+                      <RegattaListItem
+                        key={i}
+                        regatta={regatta}
+                        user={currentUser}
+                        buttonState={this.state.buttonStateForRegatta.get(regatta.id)}
+                      />
+                    );
+                  })}
+              </IonList>
+            </IonContent>
+          );
+        } else {
+          content = (
+            <IonContent>
+              <IonHeader>Please log in to view your schedule</IonHeader>
+            </IonContent>
+          );
+        }
         break;
       default:
         break;
