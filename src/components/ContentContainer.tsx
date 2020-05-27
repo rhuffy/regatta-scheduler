@@ -132,7 +132,7 @@ class ContentContainer extends React.Component<Props, State> {
         } else {
           content = (
             <IonContent>
-              <IonHeader>Please log in to view your schedule</IonHeader>
+              <IonHeader>Please log in to view your schedule.</IonHeader>
             </IonContent>
           );
         }
@@ -160,7 +160,7 @@ class ContentContainer extends React.Component<Props, State> {
         } else {
           content = (
             <IonContent>
-              <IonHeader>Please log in to view your schedule</IonHeader>
+              <IonHeader>Please log in to view your events.</IonHeader>
             </IonContent>
           );
         }
