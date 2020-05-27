@@ -25,19 +25,19 @@ interface AppPage {
 const appPages: AppPage[] = [
   {
     title: "Regattas",
-    url: `/page/Regattas`,
+    url: `/regattas`,
     iosIcon: boatOutline,
     mdIcon: boatSharp,
   },
   {
     title: "My Schedule",
-    url: `/page/Schedule`,
+    url: `/schedule`,
     iosIcon: calendarOutline,
     mdIcon: calendarSharp,
   },
   {
     title: "Hosting",
-    url: `/page/Hosting`,
+    url: `/hosting`,
     iosIcon: flagOutline,
     mdIcon: flagSharp,
   },

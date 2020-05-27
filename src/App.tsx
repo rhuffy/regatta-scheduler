@@ -58,8 +58,8 @@ class App extends React.Component<Props, State> {
           <IonSplitPane contentId="main">
             <Menu />
             <IonRouterOutlet id="main">
-              <Route path="/page/:name" render={(props) => <Page loggedIn={this.state.loggedIn} />} exact />
-              <Redirect from="/" to="/page/Regattas" exact />
+              <Route path="/:name" render={(props) => <Page loggedIn={this.state.loggedIn} />} exact />
+              <Redirect from="/" to="/Regattas" exact />
             </IonRouterOutlet>
           </IonSplitPane>
         </IonReactRouter>

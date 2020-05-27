@@ -53,7 +53,7 @@ const Page: React.FC<Props> = (props) => {
           <IonButtons slot="start">
             <IonMenuButton />
           </IonButtons>
-          <IonTitle>{name}</IonTitle>
+          <IonTitle>{name.toUpperCase()}</IonTitle>
           <IonModal
             isOpen={showLoginModal}
             onDidDismiss={() => {

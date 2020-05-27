@@ -91,7 +91,7 @@ class ContentContainer extends React.Component<Props, State> {
     const currentUser = this.state.currentUser;
 
     switch (this.props.name) {
-      case "Regattas":
+      case "regattas":
         content = (
           <IonContent>
             <IonList>
@@ -109,7 +109,7 @@ class ContentContainer extends React.Component<Props, State> {
           </IonContent>
         );
         break;
-      case "Schedule":
+      case "schedule":
         if (currentUser) {
           content = (
             <IonContent>
@@ -137,7 +137,7 @@ class ContentContainer extends React.Component<Props, State> {
           );
         }
         break;
-      case "Hosting":
+      case "hosting":
         if (currentUser) {
           content = (
             <IonContent>
